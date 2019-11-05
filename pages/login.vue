@@ -13,6 +13,7 @@
               <div class="field">
                 <div class="control">
                   <input
+                    @blur="$v.form.email.$touch()"
                     class="input is-large"
                     type="email"
                     placeholder="Your Email"
@@ -20,27 +21,29 @@
                     autocomplete="email"
                     v-model="form.email"
                   />
-                  <!-- <div class="form-error">
-                    <span class="help is-danger">Email is required</span>
-                    <span class="help is-danger">Email address is not valid</span>
-                  </div>-->
+                  <div v-if="$v.form.email.$error" class="form-error">
+                    <span v-if="!$v.form.email.required" class="help is-danger">Email is required</span>
+                    <span v-if="!$v.form.email.emailValidator" class="help is-danger">Email address is not valid</span>
+                  </div>
                 </div>
               </div>
               <div class="field">
                 <div class="control">
                   <input
+                    @blur="$v.form.password.$touch()"
                     class="input is-large"
                     type="password"
                     placeholder="Your Password"
                     autocomplete="current-password"
                     v-model="form.password"
                   />
-                  <!-- <div class="form-error">
-                    <span class="help is-danger">Password is required</span>
-                  </div>-->
+                  <div v-if="$v.form.password.$error" class="form-error">
+                    <span v-if="!$v.form.password.required" class="help is-danger">Password is required</span>
+                  </div>
                 </div>
               </div>
               <button
+                :disabled="$v.form.$invalid"
                 @click.prevent="login"
                 class="button is-block is-info is-large is-fullwidth"
               >Login</button>
@@ -72,7 +75,7 @@ export default {
   validations: {
     form: {
       email: {
-        email,
+        emailValidator: email,
         required
       },
       password: {
@@ -80,9 +83,25 @@ export default {
       }
     }
   },
+  computed: {
+    isFormValid() {
+      return !this.$v.$invalid
+    }
+  },
   methods: {
     login() {
-      console.log(this.form.email, this.form.password)
+      this.$v.form.$touch()
+      if (this.isFormValid) {
+        this.$store.dispatch('auth/login', this.form)
+          .then(() => this.$router.push('/'))
+      }
+    
+    },
+    clearForm() {
+      this.form = {
+        email: null,
+        password: null
+      }
     }
   }
 }
