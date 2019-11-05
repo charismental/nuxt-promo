@@ -18,6 +18,7 @@
                     placeholder="Your Email"
                     autofocus
                     autocomplete="email"
+                    v-model="form.email"
                   />
                   <!-- <div class="form-error">
                     <span class="help is-danger">Email is required</span>
@@ -32,15 +33,15 @@
                     type="password"
                     placeholder="Your Password"
                     autocomplete="current-password"
+                    v-model="form.password"
                   />
                   <!-- <div class="form-error">
                     <span class="help is-danger">Password is required</span>
                   </div>-->
                 </div>
               </div>
-              <!-- Login Button -->
               <button
-                @click.prevent="() => {}"
+                @click.prevent="login"
                 class="button is-block is-info is-large is-fullwidth"
               >Login</button>
             </form>
@@ -56,6 +57,36 @@
     </div>
   </section>
 </template>
+
+<script>
+import { required, email } from 'vuelidate/lib/validators'
+export default {
+  data () {
+    return {
+      form: {
+        email: null,
+        password: null
+      }
+    }
+  },
+  validations: {
+    form: {
+      email: {
+        email,
+        required
+      },
+      password: {
+        required
+      }
+    }
+  },
+  methods: {
+    login() {
+      console.log(this.form.email, this.form.password)
+    }
+  }
+}
+</script>
 
 <style lang="scss" scoped>
 .hero.is-success {
